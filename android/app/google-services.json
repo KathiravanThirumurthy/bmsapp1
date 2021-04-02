@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "105406290704",
+    "project_id": "bmsappversion1",
+    "storage_bucket": "bmsappversion1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105406290704:android:fb21b7ed603b8dce506395",
+        "android_client_info": {
+          "package_name": "com.touchenergy.bmsappversion1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105406290704-mmcb6i03tg32igltk6d5hu8pld2mdat7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touchenergy.bmsappversion1",
+            "certificate_hash": "93f50cc4ca66e0fcb55af38e7152c0efb585e39f"
+          }
+        },
+        {
+          "client_id": "105406290704-qvlsofqojpb84ts0e1nqqjbpiapl27am.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.touchenergy.bmsappversion1",
+            "certificate_hash": "77e65f155e5f09fd19dfaa7f5fb268b36267b5e7"
+          }
+        },
+        {
+          "client_id": "105406290704-2d5ailqbaf65q10cdd6o8nbek51278i8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZhNj-T2tY0KbX02rNqstfEAEXynWhfac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "105406290704-2d5ailqbaf65q10cdd6o8nbek51278i8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

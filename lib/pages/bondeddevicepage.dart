@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bmsappversion1/pages/connectionStatus.dart';
+
+//import 'connectionStatus.dart';
 
 class BondedDevicePage extends StatefulWidget {
   BondedDevicePage({Key key}) : super(key: key);
@@ -13,7 +16,7 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
   static const getConnected = const MethodChannel('connectchannel');
   String message = "No Message from Native App";
   String messageFromNative = "Function invoking from Native";
-  String bluetoothStatus = "Yet to receive";
+  bool bluetoothStatus;
   //String bluetoothStatusFromNative;
 
   BluetoothDevice device;
@@ -34,10 +37,10 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
 
   Future<void> connectDevice(index) async {
     int params = index;
-    String _bluetoothStatus;
+    bool _bluetoothStatus;
     try {
       // print(index);
-      final String result = await getConnected
+      final bool result = await getConnected
           .invokeMethod('connectDeviceFunction', {"indexparam": params});
       _bluetoothStatus = result;
     } on PlatformException catch (e) {
@@ -45,8 +48,105 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
     }
     setState(() {
       bluetoothStatus = _bluetoothStatus;
-      print("status Check + '$bluetoothStatus' ");
+      if (bluetoothStatus == true) {
+        print("status Check + '$bluetoothStatus' ");
+        showAlertDialog(context, bluetoothStatus);
+      } else {
+        print("status Check + '$bluetoothStatus' ");
+        showAlertDialog(context, bluetoothStatus);
+      }
     });
+  }
+
+  showAlertDialog(BuildContext context, bool bleStatus) {
+    // set up the button
+    Widget okButton = OutlinedButton.icon(
+      icon: Icon(
+        Icons.bluetooth_connected,
+        size: 30,
+        color: Color(0XFFFF6F00),
+      ),
+      label: Text(
+        "GO",
+        style: TextStyle(fontSize: 15, color: Color(0XFFFF6F00)),
+      ),
+      style: ElevatedButton.styleFrom(
+        side: BorderSide(
+          width: 3.0,
+          color: Color(0XFFFF6F00),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ConnectionStatus()),
+        );
+      },
+    );
+
+    Widget refreshButton = OutlinedButton.icon(
+      icon: Icon(
+        Icons.refresh,
+        size: 30,
+        color: Color(0XFFFF6F00),
+      ),
+      label: Text(
+        "Refresh",
+        style: TextStyle(fontSize: 15, color: Color(0XFFFF6F00)),
+      ),
+      style: ElevatedButton.styleFrom(
+        side: BorderSide(
+          width: 3.0,
+          color: Color(0XFFFF6F00),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+      ),
+      /* child: Text(
+        "Refresh",
+        style: TextStyle(fontSize: 15, letterSpacing: 2),
+      ),
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.amber[900]),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(color: Colors.amber[900]),
+          ),
+        ),
+      ),*/
+      onPressed: () {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => super.widget));
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      insetPadding: EdgeInsets.all(10),
+      title: bluetoothStatus
+          ? Text("Your Device is Connected ")
+          : Text("Your Device is not Connected"),
+      content: bluetoothStatus
+          ? Text("You can send or receive data")
+          : Text("You cannot send or receive data"),
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+      actions: [bluetoothStatus ? okButton : refreshButton],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -98,11 +198,13 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
                         bondedDevicelist[index].toString(),
                         style: TextStyle(fontSize: 18.0),
                       ),
-                      subtitle: Text(bluetoothStatus),
+                      // subtitle: Text(bluetoothStatus.toString()),
                       trailing: Icon(Icons.more_vert),
                       onTap: () {
                         print(bondedDevicelist[index].toString());
                         connectDevice(index);
+                        // ConnectionStatus();
+                        // showAlertDialog(context);
                       },
                     ),
                   ),

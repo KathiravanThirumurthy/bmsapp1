@@ -14,6 +14,7 @@ class BondedDevicePage extends StatefulWidget {
 class _BondedDevicePageState extends State<BondedDevicePage> {
   static const getBonded = const MethodChannel('bondedchannel');
   static const getConnected = const MethodChannel('connectchannel');
+
   String message = "No Message from Native App";
   String messageFromNative = "Function invoking from Native";
   bool bluetoothStatus;
@@ -35,14 +36,21 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
     });
   }
 
-  Future<void> connectDevice(index) async {
+  Future<dynamic> connectDevice(index) async {
     int params = index;
     bool _bluetoothStatus;
     try {
-      // print(index);
       final bool result = await getConnected
           .invokeMethod('connectDeviceFunction', {"indexparam": params});
       _bluetoothStatus = result;
+/*final Map params = <String, dynamic>{
+        'indexparam': "params",
+      };*/
+      /*final List<dynamic> list = await getConnected
+          .invokeMethod('connectDeviceFunction', params)
+          .then((value) => _bluetoothStatus = value);
+      return list;*/
+
     } on PlatformException catch (e) {
       print("error + '${e.message}' ");
     }
@@ -56,6 +64,25 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
         showAlertDialog(context, bluetoothStatus);
       }
     });
+  }
+
+  static const PLATFORM_CHANNEL = const MethodChannel('platform_channel');
+// you can use whatever you like. but make sure you use the same channel string in native code also
+
+// platform channel method calling
+  Future<Null> demoFunction(BuildContext context) async {
+    try {
+      final String result = await PLATFORM_CHANNEL
+          .invokeMethod('demoFunction', // call the native function
+              <String, dynamic>{
+            // data to be passed to the function
+            'data': 'sample data',
+          });
+      // result hold the response from plaform calls
+    } on PlatformException catch (error) {
+      // handle error
+      print('Error: $error'); // here
+    }
   }
 
   showAlertDialog(BuildContext context, bool bleStatus) {
@@ -107,20 +134,6 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
           borderRadius: BorderRadius.circular(32.0),
         ),
       ),
-      /* child: Text(
-        "Refresh",
-        style: TextStyle(fontSize: 15, letterSpacing: 2),
-      ),
-      style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.amber[900]),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-            side: BorderSide(color: Colors.amber[900]),
-          ),
-        ),
-      ),*/
       onPressed: () {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) => super.widget));

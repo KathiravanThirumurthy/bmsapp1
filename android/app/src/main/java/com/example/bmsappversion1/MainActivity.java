@@ -1,7 +1,9 @@
 package com.example.bmsappversion1;
 
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.os.Build;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -51,11 +53,21 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 import static android.content.ContentValues.TAG;
 
 
+
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+
+
 public class MainActivity extends FlutterActivity {
     public static final String BONCHANNEL="bonChannel";
     public static final String BONDEDCHANNEL="bondedchannel";
     public static final String CONNECTCHANNEL="connectchannel";
     public static final String SIMPLEMSGCHANNEL="simplemsgchannel";
+    public static  final String SAMPLECHANNEL="samplechannel";
+
+    private static final String PLATFORM_CHANNEL = "platform_channel";
 
 
 
@@ -84,6 +96,7 @@ public class MainActivity extends FlutterActivity {
     //public String bluetoothStatus;
     public String readMessage;
     public Boolean bluetoothStatus;
+    public String handShakeMsg;
 
 
     public BluetoothAdapter bluetoothAdapter;
@@ -169,11 +182,17 @@ public class MainActivity extends FlutterActivity {
                             if(call.method.equals("connectDeviceFunction"))
                             {
                                 int params=call.argument("indexparam");
-                                // Log.d(TAG, String.valueOf(params));
-                                connectDeviceFunction(params);
+                                connectDeviceFunction(result,params);
+                                /*
                                 if(bluetoothStatus !=null) {
+                                    //updateBleConnectedStatus();
                                     result.success(bluetoothStatus);
-                                }
+                                }else
+                                {
+                                    result.error("unavailable","bluetoothStatus value not updated",null);
+                                }*/
+                                // Log.d(TAG, String.valueOf(params));
+
                             }else {
                                 result.notImplemented();
 
@@ -195,11 +214,12 @@ public class MainActivity extends FlutterActivity {
                             if(call.method.equals("handShakeMsgFunction"))
                             {
                                 Log.e(TAG, "checking for msg Channel");
-                                if(readMessage!=null)
+                                handShakeMsgFunction(result);
+                                /*if(handShakeMsg!=null)
                                 {
-                                    result.success(readMessage);
-                                }
-                                handShakeMsgFunction();
+                                    result.success(handShakeMsg);
+                                }*/
+
 
                             }else {
                                 result.notImplemented();
@@ -208,6 +228,28 @@ public class MainActivity extends FlutterActivity {
 
                         }
                 );
+
+        //Sample from Native to flutter
+
+        /*
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), PLATFORM_CHANNEL).setMethodCallHandler(
+                new MethodCallHandler() {
+
+                    @Override
+                    public void onMethodCall(MethodCall call, Result result) {
+                        if (call.method.equals("demoFunction")) { // INFO: method check
+                           String argument = call.argument("data"); // INFO: get arguments
+                           demoFunction(result, argument); // INFO: method call, every method call should pass result parameter
+                        }
+                        else {
+                            result.notImplemented(); // INFO: not implemented
+                        }
+                    }
+                }
+        );
+
+         */
+
 
      /*
 
@@ -227,6 +269,15 @@ public class MainActivity extends FlutterActivity {
 
 
     } //configure flutter engine ends
+
+   /* public void demoFunction(Result result, String data) {
+        // INFO: function implementation
+        if (true) { // INFO: check for some condition
+            result.success("android call success with data " + data); // INFO: success response should return through this method
+        } else {
+            result.error("ERROR", "Error message description!", null); // INFO: error response should return through this method
+        }
+    }*/
 
     /*********************  Checking for Permission **********************************/
 
@@ -361,7 +412,7 @@ public class MainActivity extends FlutterActivity {
                 bondedlist.add(device.getName());
 
 
-                Toast.makeText(getApplicationContext(), deviceName, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), deviceName, Toast.LENGTH_SHORT).show();
 
             }
 
@@ -375,22 +426,31 @@ public class MainActivity extends FlutterActivity {
 
     };
     // Sending hand shake msg function to bluetooth
-    private void handShakeMsgFunction()
+    private void handShakeMsgFunction(Result result)
     {
 
 
 
-        String androidCmd = "0";
-        connectedThread.write(androidCmd);
-        Toast.makeText(getBaseContext(), "Sent data zero", Toast.LENGTH_SHORT).show();
+         handShakeMsg = "0";
+        connectedThread.write(handShakeMsg);
+        Toast.makeText(getBaseContext(), "Sent data zero"+handShakeMsg, Toast.LENGTH_SHORT).show();
+        result.success(handShakeMsg);
 
 
     }
+
+    private boolean updateBleConnectedStatus(boolean bluetoothStatus)
+    {
+        bluetoothStatus=bluetoothStatus;
+
+        return bluetoothStatus;
+    }
     // Getting Connected Device
 
-    private void connectDeviceFunction(int params)
+    private void connectDeviceFunction(Result result,int params)
     {
         int index=params;
+
         // BluetoothSocket mmSocket = null;
         BluetoothDevice device =bondedDevices.get(index);
         Log.d(TAG,"Connect Bonded device -devicename"+ bondedlist.get(index));
@@ -404,7 +464,7 @@ public class MainActivity extends FlutterActivity {
         cthread.start();*/
         if(!bluetoothAdapter.isEnabled()) {
             Toast.makeText(getBaseContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
-            return;
+            //return;
         }
 
 
@@ -416,7 +476,7 @@ public class MainActivity extends FlutterActivity {
             to create bluetooth connection to the selected device using the device Address
              */
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            createConnectThread = new CreateConnectThread(bluetoothAdapter,device);
+            createConnectThread = new CreateConnectThread(bluetoothAdapter,device,result);
             createConnectThread.start();
 
         }
@@ -434,13 +494,31 @@ public class MainActivity extends FlutterActivity {
                             case 1:
                                 // bluetoothStatus="Bluetooth Connected";
                                 bluetoothStatus=true;
+                                result.success(bluetoothStatus);
                                 Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
                                 Log.e(TAG, "handler message "+ bluetoothStatus);
                                 break;
                             case -1:
                                 // bluetoothStatus="Connection Failed";
                                 bluetoothStatus=false;
+                                result.success(bluetoothStatus);
+                              /*  AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                                builder.setMessage("Connection Failed you can't send and receive data").setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        onResume();
+                                    }
+                                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+
+                                    }
+                                });
+                                AlertDialog alert = builder.create();
+                                alert.show();*/
                                 Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
+                                Log.e(TAG, "handler message failed"+ bluetoothStatus);
                                 break;
                         }
 
@@ -455,18 +533,9 @@ public class MainActivity extends FlutterActivity {
                         break;
                 }
 
-
             }
 
         };
-
-
-
-
-
-
-
-
 
 
 
@@ -499,7 +568,7 @@ public class MainActivity extends FlutterActivity {
 
     public static class CreateConnectThread extends Thread {
 
-        public CreateConnectThread(BluetoothAdapter bluetoothAdapter, BluetoothDevice device) {
+        public CreateConnectThread(BluetoothAdapter bluetoothAdapter, BluetoothDevice device,Result result) {
 
             // Opening connection socket with the Arduino board
             BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.getAddress());
@@ -610,13 +679,19 @@ public class MainActivity extends FlutterActivity {
             byte[] bytes = input.getBytes(); //converts entered String into bytes
             try {
                 mmOutStream.write(bytes);
+
             } catch (IOException e) { }
         }
     }
 
 
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        //here...
 
+    }
 
 
 

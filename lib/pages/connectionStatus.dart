@@ -10,9 +10,9 @@ class ConnectionStatus extends StatefulWidget {
 
 class _ConnectionStatusState extends State<ConnectionStatus> {
   static const sendMsg = const MethodChannel('simplemsgchannel');
-  String receivedMsg;
+  String receivedMsg = "yet to send data";
   Future<void> sendingMsg() async {
-    String _receivedMsg;
+    String _receivedMsg = "yet to receive";
     try {
       String result = await sendMsg.invokeMethod('handShakeMsgFunction');
       _receivedMsg = result;
@@ -28,7 +28,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
   @override
   void initState() {
     super.initState();
-    sendingMsg();
+    //sendingMsg();
   }
 
   @override
@@ -50,9 +50,10 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
       child: Column(
         children: [
           Text(
-            receivedMsg,
+            "Sent --" + receivedMsg,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          )
+          ),
+          ElevatedButton(onPressed: sendingMsg, child: Text('Send Data')),
         ],
       ),
     );

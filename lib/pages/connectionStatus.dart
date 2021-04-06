@@ -10,6 +10,7 @@ class ConnectionStatus extends StatefulWidget {
 
 class _ConnectionStatusState extends State<ConnectionStatus> {
   static const sendMsg = const MethodChannel('simplemsgchannel');
+  static const recvMsg = const MethodChannel('simpleRcvChannel');
   String receivedMsg = "yet to send data";
   Future<void> sendingMsg() async {
     String _receivedMsg = "yet to receive";
@@ -28,7 +29,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
   @override
   void initState() {
     super.initState();
-    //sendingMsg();
+    sendingMsg();
   }
 
   @override

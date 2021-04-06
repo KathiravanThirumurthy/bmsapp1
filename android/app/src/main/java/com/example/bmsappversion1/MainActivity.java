@@ -37,6 +37,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -526,9 +527,22 @@ public class MainActivity extends FlutterActivity {
 
                     // If the updates come from the Thread for Data Exchange
                     case MESSAGE_READ:
-                        String statusText = msg.obj.toString().replace("/n","");
+                        /*String statusText = msg.obj.toString().replace("/n","");
                         // ledStatus.setText(statusText);
                         readMessage=statusText;
+                        Log.e(TAG, "Message Read from Board"+ readMessage);
+                        Toast.makeText(getApplicationContext(),"REceived Message" +statusText,Toast.LENGTH_LONG).show();
+                        break;*/
+                        String statusText = null;
+                        try {
+                            statusText = new String((byte[]) msg.obj, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        //mReadBuffer.setText(readMessage);
+                        readMessage=statusText;
+                        result.success(readMessage);
+                        Log.e(TAG, "Message Read from Board"+ readMessage);
                         Toast.makeText(getApplicationContext(),"REceived Message" +statusText,Toast.LENGTH_LONG).show();
                         break;
                 }
@@ -652,7 +666,7 @@ public class MainActivity extends FlutterActivity {
             while (true) {
                 try {
                     // Read from the InputStream
-                    buffer[bytes] = (byte) mmInStream.read();
+              /*      buffer[bytes] = (byte) mmInStream.read();
                     String arduinoMsg = null;
 
                     // Parsing the incoming data stream
@@ -663,6 +677,23 @@ public class MainActivity extends FlutterActivity {
 
                         handler.obtainMessage(MESSAGE_READ,arduinoMsg).sendToTarget();
                         bytes = 0;
+                */
+
+
+                        bytes = mmInStream.available();
+                if(bytes != 0) {
+                    buffer = new byte[1024];
+                    SystemClock.sleep(100); //pause and wait for rest of data. Adjust this depending on your sending speed.
+                    bytes = mmInStream.available(); // how many bytes are ready to be read?
+                    bytes = mmInStream.read(buffer, 0, bytes); // record how many bytes we actually read
+                    handler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget(); // Send the obtained bytes to the UI activity
+
+
+
+
+
+
                     } else {
                         bytes++;
                     }

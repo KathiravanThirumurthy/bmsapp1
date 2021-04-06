@@ -66,9 +66,9 @@ public class MainActivity extends FlutterActivity {
     public static final String BONDEDCHANNEL="bondedchannel";
     public static final String CONNECTCHANNEL="connectchannel";
     public static final String SIMPLEMSGCHANNEL="simplemsgchannel";
-    public static  final String SAMPLECHANNEL="samplechannel";
+    public static  final String SIMPLERECEIVECHANNEL="simpleReceiveChannel";
 
-    private static final String PLATFORM_CHANNEL = "platform_channel";
+   // private static final String PLATFORM_CHANNEL = "platform_channel";
 
 
 
@@ -214,12 +214,9 @@ public class MainActivity extends FlutterActivity {
 
                             if(call.method.equals("handShakeMsgFunction"))
                             {
-                                Log.e(TAG, "checking for msg Channel");
+                                //Log.e(TAG, "checking for msg Channel");
                                 handShakeMsgFunction(result);
-                                /*if(handShakeMsg!=null)
-                                {
-                                    result.success(handShakeMsg);
-                                }*/
+
 
 
                             }else {
@@ -229,6 +226,30 @@ public class MainActivity extends FlutterActivity {
 
                         }
                 );
+
+        // receiving message from Bluetooth
+        /*new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), SIMPLERECEIVECHANNEL)
+                .setMethodCallHandler(
+                        (call, result) -> {
+                            // Note: this method is invoked on the main thread.
+                            // TODO
+                            //  Map<String,Object> params=(Map<String,Object>) call.arguments;
+
+
+                            if(call.method.equals("receiveMsgFunction"))
+                            {
+
+                               getdataFromBluetooth(result);
+                               // result.success(readMessage);
+
+
+                            }else {
+                                result.notImplemented();
+
+                            }
+
+                        }
+                );*/
 
         //Sample from Native to flutter
 
@@ -426,16 +447,22 @@ public class MainActivity extends FlutterActivity {
 
 
     };
+    // Receiving message from bluetooth and sending
+   /* private void getdataFromBluetooth(Result result)
+    {
+        Log.e(TAG, "checking for receiving Channel"+readMessage);
+        result.success(readMessage);
+    }*/
     // Sending hand shake msg function to bluetooth
     private void handShakeMsgFunction(Result result)
     {
 
 
 
-         handShakeMsg = "0";
+         handShakeMsg = "From Java to Bluetooth";
         connectedThread.write(handShakeMsg);
-        Toast.makeText(getBaseContext(), "Sent data zero"+handShakeMsg, Toast.LENGTH_SHORT).show();
-        result.success(handShakeMsg);
+        //Toast.makeText(getBaseContext(), "Sent data to bluetooth:"+handShakeMsg, Toast.LENGTH_SHORT).show();
+       // result.success(handShakeMsg);
 
 
     }
@@ -482,44 +509,27 @@ public class MainActivity extends FlutterActivity {
 
         }
 
-        handler=new Handler(Looper.getMainLooper())
+      /* handler=new Handler(Looper.getMainLooper())
         {
             @Override
             public void handleMessage(Message msg){
-                //  Toast.makeText(getApplicationContext(), deviceName, Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), msg.toString(), Toast.LENGTH_LONG).show();
+               Toast.makeText(getApplicationContext(), msg.toString(), Toast.LENGTH_LONG).show();
                 switch (msg.what){
                     // If the updates come from the Thread to Create Connection
                     case CONNECTION_STATUS:
                         switch(msg.arg1){
                             case 1:
-                                // bluetoothStatus="Bluetooth Connected";
+
                                 bluetoothStatus=true;
                                 result.success(bluetoothStatus);
                                 Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
-                                Log.e(TAG, "handler message "+ bluetoothStatus);
                                 break;
                             case -1:
-                                // bluetoothStatus="Connection Failed";
+
                                 bluetoothStatus=false;
                                 result.success(bluetoothStatus);
-                              /*  AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
-                                builder.setMessage("Connection Failed you can't send and receive data").setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        onResume();
-                                    }
-                                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-
-                                    }
-                                });
-                                AlertDialog alert = builder.create();
-                                alert.show();*/
                                 Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
-                                Log.e(TAG, "handler message failed"+ bluetoothStatus);
+
                                 break;
                         }
 
@@ -527,12 +537,6 @@ public class MainActivity extends FlutterActivity {
 
                     // If the updates come from the Thread for Data Exchange
                     case MESSAGE_READ:
-                        /*String statusText = msg.obj.toString().replace("/n","");
-                        // ledStatus.setText(statusText);
-                        readMessage=statusText;
-                        Log.e(TAG, "Message Read from Board"+ readMessage);
-                        Toast.makeText(getApplicationContext(),"REceived Message" +statusText,Toast.LENGTH_LONG).show();
-                        break;*/
                         String statusText = null;
                         try {
                             statusText = new String((byte[]) msg.obj, "UTF-8");
@@ -541,14 +545,43 @@ public class MainActivity extends FlutterActivity {
                         }
                         //mReadBuffer.setText(readMessage);
                         readMessage=statusText;
-                        result.success(readMessage);
-                        Log.e(TAG, "Message Read from Board"+ readMessage);
                         Toast.makeText(getApplicationContext(),"REceived Message" +statusText,Toast.LENGTH_LONG).show();
                         break;
                 }
 
             }
 
+        };*/
+        handler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg){
+                if(msg.what == MESSAGE_READ){
+                    String readMessage = null;
+                    try {
+                        readMessage = new String((byte[]) msg.obj, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                   // mReadBuffer.setText(readMessage);
+                   
+                }
+
+                if(msg.what == CONNECTION_STATUS){
+                    if(msg.arg1 == 1)
+                    {
+                        bluetoothStatus=true;
+                        result.success(bluetoothStatus);
+                    }
+
+                    else
+                    {
+                        bluetoothStatus=false;
+                        result.success(bluetoothStatus);
+
+                    }
+
+                }
+            }
         };
 
 
@@ -680,7 +713,7 @@ public class MainActivity extends FlutterActivity {
                 */
 
 
-                        bytes = mmInStream.available();
+                 bytes = mmInStream.available();
                 if(bytes != 0) {
                     buffer = new byte[1024];
                     SystemClock.sleep(100); //pause and wait for rest of data. Adjust this depending on your sending speed.
@@ -688,11 +721,6 @@ public class MainActivity extends FlutterActivity {
                     bytes = mmInStream.read(buffer, 0, bytes); // record how many bytes we actually read
                     handler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget(); // Send the obtained bytes to the UI activity
-
-
-
-
-
 
                     } else {
                         bytes++;

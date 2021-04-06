@@ -10,8 +10,23 @@ class ConnectionStatus extends StatefulWidget {
 
 class _ConnectionStatusState extends State<ConnectionStatus> {
   static const sendMsg = const MethodChannel('simplemsgchannel');
-  static const recvMsg = const MethodChannel('simpleRcvChannel');
+  static const recvMsg = const MethodChannel('simpleReceiveChannel');
   String receivedMsg = "yet to send data";
+  String fromBle = "waiting for message";
+  Future<void> receivingMsg() async {
+    String _receivedMsg = "waiting to receive....";
+    try {
+      String result = await recvMsg.invokeMethod('receiveMsgFunction');
+      _receivedMsg = result;
+      print('REceived message $result');
+    } on PlatformException catch (e) {
+      print("error + '${e.message}' ");
+    }
+    setState(() {
+      fromBle = _receivedMsg;
+    });
+  }
+
   Future<void> sendingMsg() async {
     String _receivedMsg = "yet to receive";
     try {
@@ -29,6 +44,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
   @override
   void initState() {
     super.initState();
+    // receivingMsg();
     sendingMsg();
   }
 
@@ -51,10 +67,11 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
       child: Column(
         children: [
           Text(
-            "Sent --" + receivedMsg,
+            "Received from ble ..." + fromBle,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           ElevatedButton(onPressed: sendingMsg, child: Text('Send Data')),
+          ElevatedButton(onPressed: receivingMsg, child: Text('Send Data')),
         ],
       ),
     );

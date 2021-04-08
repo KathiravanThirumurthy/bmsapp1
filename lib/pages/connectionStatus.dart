@@ -17,6 +17,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
     String _receivedMsg = "waiting to receive....";
     try {
       String result = await recvMsg.invokeMethod('receiveMsgFunction');
+      print("Result of Receiving: $result");
       _receivedMsg = result;
       print('REceived message $result');
     } on PlatformException catch (e) {
@@ -45,7 +46,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
   void initState() {
     super.initState();
     // receivingMsg();
-    sendingMsg();
+    // sendingMsg();
   }
 
   @override
@@ -70,8 +71,12 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
             "Received from ble ..." + fromBle,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
+          Text(
+            "APP TO BLE ..." + receivedMsg,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           ElevatedButton(onPressed: sendingMsg, child: Text('Send Data')),
-          ElevatedButton(onPressed: receivingMsg, child: Text('Send Data')),
+          //ElevatedButton(onPressed: receivingMsg, child: Text('Receive Data')),
         ],
       ),
     );

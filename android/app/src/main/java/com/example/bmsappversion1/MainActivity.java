@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class MainActivity extends FlutterActivity {
 
     //public String bluetoothStatus;
     public String readMessage;
+    public Boolean canRead;
     public Boolean bluetoothStatus;
     public String handShakeMsg;
 
@@ -216,6 +218,10 @@ public class MainActivity extends FlutterActivity {
                             {
                                 //Log.e(TAG, "checking for msg Channel");
                                 handShakeMsgFunction(result);
+                                if(bluetoothStatus)
+                                {
+                                    result.success(bluetoothStatus);
+                                }
 
 
 
@@ -228,7 +234,7 @@ public class MainActivity extends FlutterActivity {
                 );
 
         // receiving message from Bluetooth
-        /*new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), SIMPLERECEIVECHANNEL)
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), SIMPLERECEIVECHANNEL)
                 .setMethodCallHandler(
                         (call, result) -> {
                             // Note: this method is invoked on the main thread.
@@ -239,8 +245,13 @@ public class MainActivity extends FlutterActivity {
                             if(call.method.equals("receiveMsgFunction"))
                             {
 
-                               getdataFromBluetooth(result);
-                               // result.success(readMessage);
+                              // getdataFromBluetooth(result);
+                               if(canRead)
+                               {
+                                   result.success(readMessage);
+
+                               }
+
 
 
                             }else {
@@ -249,7 +260,7 @@ public class MainActivity extends FlutterActivity {
                             }
 
                         }
-                );*/
+                );
 
         //Sample from Native to flutter
 
@@ -271,21 +282,6 @@ public class MainActivity extends FlutterActivity {
         );
 
          */
-
-
-     /*
-
-      // Code to turn ON LED
-        buttonOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String androidCmd = "w";
-                connectedThread.write(androidCmd);
-            }
-        });
-      */
-
-
 
 
 
@@ -334,10 +330,6 @@ public class MainActivity extends FlutterActivity {
             // we check if coarse location must be asked
             checkBTPermission();
             bluetoothAdapter.startDiscovery();
-
-
-
-
 
         }else {
             checkBluetoothState();
@@ -453,20 +445,31 @@ public class MainActivity extends FlutterActivity {
         Log.e(TAG, "checking for receiving Channel"+readMessage);
         result.success(readMessage);
     }*/
+    // writing to a file
+    private void writeToFile(String data,Context context) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("config.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
     // Sending hand shake msg function to bluetooth
     private void handShakeMsgFunction(Result result)
     {
-
-
-
          handShakeMsg = "From Java to Bluetooth";
         connectedThread.write(handShakeMsg);
-        //Toast.makeText(getBaseContext(), "Sent data to bluetooth:"+handShakeMsg, Toast.LENGTH_SHORT).show();
-       // result.success(handShakeMsg);
-
-
     }
 
+    private void getdataFromBluetooth(Result result,boolean canRead)
+    {
+        if(canRead)
+        {
+            result.success(readMessage);
+        }
+    }
     private boolean updateBleConnectedStatus(boolean bluetoothStatus)
     {
         bluetoothStatus=bluetoothStatus;
@@ -559,11 +562,15 @@ public class MainActivity extends FlutterActivity {
                     String readMessage = null;
                     try {
                         readMessage = new String((byte[]) msg.obj, "UTF-8");
+                       //tvAppend(textView, data);
+                        canRead=true;
+                        result.success(canRead);
+
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                   // mReadBuffer.setText(readMessage);
-                   
+                   Toast.makeText(getApplicationContext(),"MEssage"+readMessage,Toast.LENGTH_LONG).show();
+
                 }
 
                 if(msg.what == CONNECTION_STATUS){
@@ -584,31 +591,7 @@ public class MainActivity extends FlutterActivity {
             }
         };
 
-
-
-
-
-
-
-
     } // end of Getting Connected Device
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /* ============================ Thread to Create Connection ================================= */
 
@@ -711,8 +694,6 @@ public class MainActivity extends FlutterActivity {
                         handler.obtainMessage(MESSAGE_READ,arduinoMsg).sendToTarget();
                         bytes = 0;
                 */
-
-
                  bytes = mmInStream.available();
                 if(bytes != 0) {
                     buffer = new byte[1024];

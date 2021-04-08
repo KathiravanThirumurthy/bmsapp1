@@ -43,14 +43,6 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
       final bool result = await getConnected
           .invokeMethod('connectDeviceFunction', {"indexparam": params});
       _bluetoothStatus = result;
-/*final Map params = <String, dynamic>{
-        'indexparam': "params",
-      };*/
-      /*final List<dynamic> list = await getConnected
-          .invokeMethod('connectDeviceFunction', params)
-          .then((value) => _bluetoothStatus = value);
-      return list;*/
-
     } on PlatformException catch (e) {
       print("error + '${e.message}' ");
     }

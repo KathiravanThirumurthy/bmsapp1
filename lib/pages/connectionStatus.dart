@@ -32,7 +32,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
     String _receivedMsg = "yet to receive";
     try {
       String result = await sendMsg.invokeMethod('handShakeMsgFunction');
-      _receivedMsg = result;
+      _receivedMsg = result.toString();
       print('REceived message $result');
     } on PlatformException catch (e) {
       print("error + '${e.message}' ");
@@ -45,8 +45,8 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
   @override
   void initState() {
     super.initState();
-    // receivingMsg();
-    // sendingMsg();
+    receivingMsg();
+    sendingMsg();
   }
 
   @override
@@ -76,7 +76,7 @@ class _ConnectionStatusState extends State<ConnectionStatus> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           ElevatedButton(onPressed: sendingMsg, child: Text('Send Data')),
-          //ElevatedButton(onPressed: receivingMsg, child: Text('Receive Data')),
+          ElevatedButton(onPressed: receivingMsg, child: Text('Receive Data')),
         ],
       ),
     );

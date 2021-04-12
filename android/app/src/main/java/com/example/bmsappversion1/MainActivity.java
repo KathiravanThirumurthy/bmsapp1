@@ -248,6 +248,7 @@ public class MainActivity extends FlutterActivity {
                               // getdataFromBluetooth(result);
                                if(canRead)
                                {
+                                   readMessage=passMsg(readMessage,canRead);
                                    result.success(readMessage);
 
                                }
@@ -446,15 +447,13 @@ public class MainActivity extends FlutterActivity {
         result.success(readMessage);
     }*/
     // writing to a file
-    private void writeToFile(String data,Context context) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("config.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
+
+    private String  passMsg(String readMessage,boolean canRead)
+    {
+
+            return readMessage;
+        
+
     }
     // Sending hand shake msg function to bluetooth
     private void handShakeMsgFunction(Result result)
@@ -559,12 +558,13 @@ public class MainActivity extends FlutterActivity {
             @Override
             public void handleMessage(Message msg){
                 if(msg.what == MESSAGE_READ){
-                    String readMessage = null;
+                     readMessage = null;
                     try {
                         readMessage = new String((byte[]) msg.obj, "UTF-8");
                        //tvAppend(textView, data);
                         canRead=true;
-                        result.success(canRead);
+                        passMsg(readMessage,canRead);
+                        //result.success(canRead);
 
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();

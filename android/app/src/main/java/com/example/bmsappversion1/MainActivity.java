@@ -3,7 +3,6 @@ package com.example.bmsappversion1;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
-import android.content.DialogInterface;
 import android.os.Build;
 
 import io.flutter.embedding.android.FlutterActivity;
@@ -92,10 +91,6 @@ public class MainActivity extends FlutterActivity {
     // The following variables used in bluetooth handler to identify message status
     private final static int CONNECTION_STATUS = 1;
     private final static int MESSAGE_READ = 2;
-
-
-
-    //public String bluetoothStatus;
     public String readMessage;
     public Boolean canRead;
     public Boolean bluetoothStatus;
@@ -109,16 +104,9 @@ public class MainActivity extends FlutterActivity {
     public ArrayList<BluetoothDevice> bondedDevices=new ArrayList<BluetoothDevice>();
     public Set<BluetoothDevice> pairedDevices;
     public ArrayList<String> bondedlist ;
-
-
-    // private Handler mHandler; // Our main handler that will receive callback notifications
-    // private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
-    // private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
-
-
-
-
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private  MyBroadcastReceiver mBroadcastReceiver1;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -126,6 +114,7 @@ public class MainActivity extends FlutterActivity {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
 
         bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
+        mBroadcastReceiver1=new MyBroadcastReceiver();
 
         // getting Bluetooth state
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), BONCHANNEL)
@@ -263,40 +252,11 @@ public class MainActivity extends FlutterActivity {
                         }
                 );
 
-        //Sample from Native to flutter
-
-        /*
-        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), PLATFORM_CHANNEL).setMethodCallHandler(
-                new MethodCallHandler() {
-
-                    @Override
-                    public void onMethodCall(MethodCall call, Result result) {
-                        if (call.method.equals("demoFunction")) { // INFO: method check
-                           String argument = call.argument("data"); // INFO: get arguments
-                           demoFunction(result, argument); // INFO: method call, every method call should pass result parameter
-                        }
-                        else {
-                            result.notImplemented(); // INFO: not implemented
-                        }
-                    }
-                }
-        );
-
-         */
-
 
 
 
     } //configure flutter engine ends
 
-   /* public void demoFunction(Result result, String data) {
-        // INFO: function implementation
-        if (true) { // INFO: check for some condition
-            result.success("android call success with data " + data); // INFO: success response should return through this method
-        } else {
-            result.error("ERROR", "Error message description!", null); // INFO: error response should return through this method
-        }
-    }*/
 
     /*********************  Checking for Permission **********************************/
 
@@ -317,9 +277,6 @@ public class MainActivity extends FlutterActivity {
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }  // end of Permissison
-
-
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -375,8 +332,9 @@ public class MainActivity extends FlutterActivity {
 
     } // End Checking for Bluetooth State
 
-    // Boradcast Receiver
-    private final BroadcastReceiver mBroadcastReceiver1=new BroadcastReceiver() {
+
+    // Broadcast receiver is an Android component which allows you to register for system or application events
+    /*private final BroadcastReceiver mBroadcastReceiver1=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action=intent.getAction();
@@ -387,25 +345,21 @@ public class MainActivity extends FlutterActivity {
                 {
                     case BluetoothAdapter.STATE_OFF:
                         Log.d(TAG,"onReceive :STATE OFF");
-                        //bleStatus=false;
                         break;
                     case BluetoothAdapter.STATE_ON:
                         Log.d(TAG,"onReceive :STATE ON");
-                        // bleStatus=true;
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
                         Log.d(TAG,"onReceive :STATE TURNING ON");
-                        // bleStatus=true;
                         break;
                     case BluetoothAdapter.STATE_TURNING_OFF:
                         Log.d(TAG,"onReceive :STATE TURNING OFF");
-                        //  bleStatus=false;
                         break;
                 }
             }
 
         }
-    };
+    };*/
 
     /* Getting Bonded Device */
     ArrayList<String> getBondeddevice()
@@ -413,10 +367,7 @@ public class MainActivity extends FlutterActivity {
 
         pairedDevices = bluetoothAdapter.getBondedDevices();
         bondedlist = new ArrayList<String>();
-        // bondedDevices=new ArrayList<>();
-        // ArrayList<BluetoothDevice> bondedDevices;=new ArrayList<>();
-        //return(pairedDevices);
-        if (pairedDevices.size() > 0)
+       if (pairedDevices.size() > 0)
         {
             // There are paired devices. Get the name and address of each paired device.
             for (BluetoothDevice device : pairedDevices)
@@ -425,28 +376,15 @@ public class MainActivity extends FlutterActivity {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress();
                 bondedlist.add(device.getName());
-
-
                // Toast.makeText(getApplicationContext(), deviceName, Toast.LENGTH_SHORT).show();
-
             }
-
-        }else {
+        }else
+            {
             Toast.makeText(getApplicationContext(), "NO bonded device", Toast.LENGTH_SHORT).show();
         }
-
         return(bondedlist);
-        // return (bondedDevices);
-
-
     };
     // Receiving message from bluetooth and sending
-   /* private void getdataFromBluetooth(Result result)
-    {
-        Log.e(TAG, "checking for receiving Channel"+readMessage);
-        result.success(readMessage);
-    }*/
-    // writing to a file
 
     private String  passMsg(String readMessage,boolean canRead)
     {
@@ -486,15 +424,9 @@ public class MainActivity extends FlutterActivity {
         Log.d(TAG,"Connect Bonded device -devicename"+ bondedlist.get(index));
         Log.d(TAG,"Connect Bonded device -- device ID"+ bondedDevices.get(index));
         Log.d(TAG,"Connect Bonded device -- device get address"+ device);
-      /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            device.createBond();
-        }
-        startButtonConnection(device,MY_UUID );*/
-       /* ConnectedThread cthread=new ConnectedThread(device);
-        cthread.start();*/
         if(!bluetoothAdapter.isEnabled()) {
             Toast.makeText(getBaseContext(), "Bluetooth not on", Toast.LENGTH_SHORT).show();
-            //return;
+            return;
         }
 
 
@@ -511,49 +443,6 @@ public class MainActivity extends FlutterActivity {
 
         }
 
-      /* handler=new Handler(Looper.getMainLooper())
-        {
-            @Override
-            public void handleMessage(Message msg){
-               Toast.makeText(getApplicationContext(), msg.toString(), Toast.LENGTH_LONG).show();
-                switch (msg.what){
-                    // If the updates come from the Thread to Create Connection
-                    case CONNECTION_STATUS:
-                        switch(msg.arg1){
-                            case 1:
-
-                                bluetoothStatus=true;
-                                result.success(bluetoothStatus);
-                                Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
-                                break;
-                            case -1:
-
-                                bluetoothStatus=false;
-                                result.success(bluetoothStatus);
-                                Toast.makeText(getApplicationContext(), bluetoothStatus.toString(), Toast.LENGTH_LONG).show();
-
-                                break;
-                        }
-
-                        break;
-
-                    // If the updates come from the Thread for Data Exchange
-                    case MESSAGE_READ:
-                        String statusText = null;
-                        try {
-                            statusText = new String((byte[]) msg.obj, "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                        //mReadBuffer.setText(readMessage);
-                        readMessage=statusText;
-                        Toast.makeText(getApplicationContext(),"REceived Message" +statusText,Toast.LENGTH_LONG).show();
-                        break;
-                }
-
-            }
-
-        };*/
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg){
@@ -723,6 +612,7 @@ public class MainActivity extends FlutterActivity {
             } catch (IOException e) { }
         }
     }
+
 
 
 

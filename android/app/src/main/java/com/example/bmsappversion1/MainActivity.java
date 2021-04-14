@@ -99,6 +99,7 @@ public class MainActivity extends FlutterActivity {
 
     public BluetoothAdapter bluetoothAdapter;
     public Boolean bleStatus;
+    public Map<String,Object> valueToDevice;
 
     public ArrayList<BluetoothDevice> mBTDevices=new ArrayList<>();
     public ArrayList<BluetoothDevice> bondedDevices=new ArrayList<BluetoothDevice>();
@@ -205,8 +206,9 @@ public class MainActivity extends FlutterActivity {
 
                             if(call.method.equals("handShakeMsgFunction"))
                             {
-                                //Log.e(TAG, "checking for msg Channel");
-                                handShakeMsgFunction(result);
+                                Map<String,Object> params=(Map<String,Object>) call.arguments;
+                                handShakeMsgFunction(result,params);
+
                                 if(bluetoothStatus)
                                 {
                                     result.success(bluetoothStatus);
@@ -394,10 +396,12 @@ public class MainActivity extends FlutterActivity {
 
     }
     // Sending hand shake msg function to bluetooth
-    private void handShakeMsgFunction(Result result)
+    private void handShakeMsgFunction(Result result,Map<String,Object> params)
     {
-         handShakeMsg = "From Java to Bluetooth";
-        connectedThread.write(handShakeMsg);
+         //handShakeMsg = "From Java to Bluetooth";
+        valueToDevice=params;
+        Toast.makeText(getApplicationContext(), "Form data"+valueToDevice, Toast.LENGTH_SHORT).show();
+        connectedThread.write(valueToDevice.toString());
     }
 
     private void getdataFromBluetooth(Result result,boolean canRead)

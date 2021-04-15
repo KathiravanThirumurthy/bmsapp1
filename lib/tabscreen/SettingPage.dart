@@ -67,7 +67,7 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: Form(
         key: _formKey,
-        child: new Column(
+        child: new ListView(
           children: <Widget>[
             new ListTile(
               leading: const Icon(Icons.person),

@@ -13,9 +13,12 @@ class _SettingPageState extends State<SettingPage> {
   var extractedData;
   List list = [];
   final Map<String, dynamic> formData = {
-    'current': null,
-    'voltage': null,
-    'temperature': null
+    'lowcurrent': null,
+    'highcurrent': null,
+    'lowvoltage': null,
+    'highvoltage': null,
+    'temperaturelow': null,
+    'temperaturehigh': null,
   };
   final _formKey = GlobalKey<FormState>();
   void _submitForm() {
@@ -54,90 +57,250 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: new AppBar(
-        title: new Text('Form'),
-        actions: <Widget>[
-          new IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: () {
-                _submitForm();
-              })
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: new ListView(
-          children: <Widget>[
-            new ListTile(
-              leading: const Icon(Icons.person),
-              title: new TextFormField(
-                decoration: new InputDecoration(
-                  hintText: "Current",
-                ),
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Preencha a senha';
-                  }
-                },
-                onSaved: (String value) {
-                  formData['current'] = value;
-                },
+    return Center(
+      child: ListView(children: [
+        Container(
+          // padding: EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 30),
+          padding: EdgeInsets.only(top: 2, left: 10, right: 10, bottom: 2),
+          height: 600,
+          child: Card(
+            child: Form(
+              key: _formKey,
+              child: new Column(
+                children: <Widget>[
+                  // current lowcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.flash_on),
+                    title: Text(
+                      'CurrentLowCutOff',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber[900]),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.amber[900])),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Preencha a senha';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['lowcurrent'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  //current highcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(
+                      'CurrentHighCutOff',
+                      style: TextStyle(
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.amber[900]),
+                      ),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Preencha a senha';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['highcurrent'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  //voltage lowcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.phone),
+                    title: Text(
+                      'VoltageLowCutOff',
+                      style: TextStyle(
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.amber[900])),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Preencha a senha';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['lowvoltage'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  //voltage highcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.phone),
+                    title: Text(
+                      'VoltageHighCutOff',
+                      style: TextStyle(
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.amber[900])),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Preencha a senha';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['highvoltage'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  //temp lowcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.email),
+                    title: Text(
+                      'TempLowCutOff',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber[900]),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.amber[900])),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'This is not a valid value';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['temperaturelow'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  //temp highcutoff
+                  new ListTile(
+                    leading: const Icon(Icons.phone),
+                    title: Text(
+                      'TempHighCutOff',
+                      style: TextStyle(
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Container(
+                      height: 40,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.amber[900])),
+                      child: new TextFormField(
+                        decoration:
+                            new InputDecoration(border: InputBorder.none),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Preencha a senha';
+                          }
+                        },
+                        onSaved: (String value) {
+                          formData['temperaturehigh'] = value;
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  // ignore: deprecated_member_use
+                  // //  ElevatedButton(
+                  // child: Text('Receive'),
+                  Container(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.amber[700], // background
+                        ),
+                        child: Text(
+                          'Set As',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+
+                        //color: Colors.amber[900],
+                        onPressed: () {
+                          _submitForm();
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  const Divider(
+                    height: 1.0,
+                  ),
+                ],
               ),
             ),
-            new ListTile(
-              leading: const Icon(Icons.phone),
-              title: new TextFormField(
-                decoration: new InputDecoration(
-                  hintText: "Voltage",
-                ),
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Preencha a senha';
-                  }
-                },
-                onSaved: (String value) {
-                  formData['voltage'] = value;
-                },
-              ),
-            ),
-            new ListTile(
-              leading: const Icon(Icons.email),
-              title: new TextFormField(
-                decoration: new InputDecoration(
-                  hintText: "Temperature",
-                ),
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'This is not a valid value';
-                  }
-                },
-                onSaved: (String value) {
-                  formData['temperature'] = value;
-                },
-              ),
-            ),
-            const Divider(
-              height: 1.0,
-            ),
-          ],
+          ),
         ),
-      ),
+      ]),
     );
   }
 }
 
 // https://bezkoder.com/dart-flutter-convert-object-to-json-string/
 class User {
-  int current;
-  int voltage;
-  int temperature;
+  int lowcurrent;
+  int highcurrent;
+  int lowvoltage;
+  int highvoltage;
+  int temperaturelow;
+  int temperaturehigh;
 
-  User(this.current, this.voltage, this.temperature);
+  User(this.lowcurrent, this.highcurrent, this.lowvoltage, this.highvoltage,
+      this.temperaturelow, this.temperaturehigh);
 
   Map toJson() => {
-        'current': current,
-        'voltage': voltage,
-        'temperature': temperature,
+        'lowcurrent': lowcurrent,
+        'highcurrent': highcurrent,
+        'lowvoltage': lowvoltage,
+        'highvoltage': highvoltage,
+        'temperaturelow': temperaturelow,
+        'temperaturehigh': temperaturehigh
       };
 }

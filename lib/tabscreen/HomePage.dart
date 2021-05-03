@@ -9,8 +9,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   static const recvMsg = const MethodChannel('simpleReceiveChannel');
-  String fromBle = "waiting for message";
-  String _receivedMsg = "waiting to receive....";
+  String fromBle = "waiting for message from Bluetooth";
+  //String _receivedMsg = "waiting to receive....";
   bool isData = false;
   Future<void> receivingMsg() async {
     try {
@@ -20,7 +20,8 @@ class _HomePageState extends State<HomePage> {
       } else {
         isData = true;
       }
-      _receivedMsg = result;
+      // _receivedMsg = result;
+      fromBle = result;
 
       print("Result of Receiving: $result");
     } on PlatformException catch (e) {
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     }
     setState(() {
       isData = true;
-      fromBle = _receivedMsg;
+      // fromBle = _receivedMsg;
     });
   }
   /* Map<String, dynamic> user;

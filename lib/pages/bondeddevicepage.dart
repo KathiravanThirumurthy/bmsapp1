@@ -198,18 +198,14 @@ class _BondedDevicePageState extends State<BondedDevicePage> {
                         color: Colors.amber[900],
                         size: 30.0,
                       ),
-                      //  selected: true,
                       title: Text(
                         bondedDevicelist[index].toString(),
                         style: TextStyle(fontSize: 18.0),
                       ),
-                      // subtitle: Text(bluetoothStatus.toString()),
                       trailing: Icon(Icons.more_vert),
                       onTap: () {
                         print(bondedDevicelist[index].toString());
                         connectDevice(index);
-                        // ConnectionStatus();
-                        // showAlertDialog(context);
                       },
                     ),
                   ),

@@ -329,39 +329,9 @@ public class MainActivity extends FlutterActivity {
 
         }
 
-
-
-
     } // End Checking for Bluetooth State
 
 
-    // Broadcast receiver is an Android component which allows you to register for system or application events
-    /*private final BroadcastReceiver mBroadcastReceiver1=new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action=intent.getAction();
-            if(action.equals(bluetoothAdapter.ACTION_STATE_CHANGED))
-            {
-                final int state=intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,bluetoothAdapter.ERROR);
-                switch ( state)
-                {
-                    case BluetoothAdapter.STATE_OFF:
-                        Log.d(TAG,"onReceive :STATE OFF");
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        Log.d(TAG,"onReceive :STATE ON");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        Log.d(TAG,"onReceive :STATE TURNING ON");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        Log.d(TAG,"onReceive :STATE TURNING OFF");
-                        break;
-                }
-            }
-
-        }
-    };*/
 
     /* Getting Bonded Device */
     ArrayList<String> getBondeddevice()
@@ -463,6 +433,7 @@ public class MainActivity extends FlutterActivity {
                         e.printStackTrace();
                     }
                    Toast.makeText(getApplicationContext(),"MEssage"+readMessage,Toast.LENGTH_LONG).show();
+
 
                 }
 
